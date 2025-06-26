@@ -27,36 +27,29 @@ public class SlidingWindowMaximum {
 
     public static int[] maxSlidingWindow(int[] nums, int k) {
         int n = nums.length;
-
-        // Edge case: empty array
-        if (n == 0 || k == 0) {
-            return new int[0];
-        }
-
-        // Result array of size (n - k + 1)
         int[] res = new int[n - k + 1];
-
-        // Deque to store indices of useful elements in window
+        if (n == 0) {
+            return res;
+        }
         Deque<Integer> deque = new ArrayDeque<>();
-
-        for (int i = 0; i < n; i++) {
-            // Step 1: Remove indices out of current window
-            while (!deque.isEmpty() && deque.peekFirst() <= i - k) {
-                deque.pollFirst(); // Remove from front
-            }
-
-            // Step 2: Remove smaller elements from the back of deque
-            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {
+        int index = 0;
+        while (index < k) {
+            while (!deque.isEmpty() && nums[deque.peekLast()] <= nums[index]) {
                 deque.pollLast();
             }
-
-            // Step 3: Add current element's index to deque
-            deque.offerLast(i);
-
-            // Step 4: Record the max value when window is full
-            if (i >= k - 1) {
-                res[i - k + 1] = nums[deque.peekFirst()];
+            deque.offerLast(index);
+            index++;
+        }
+        res[0] = nums[deque.peekFirst()];
+        for (int i = 1; i < n - k + 1; i++) {
+            while (!deque.isEmpty() && deque.peekFirst() <= (i - 1)) {
+                deque.pollFirst();
             }
+            while (!deque.isEmpty() && nums[deque.peekLast()] <= nums[i + k - 1]) {
+                deque.pollLast();
+            }
+            deque.offerLast(i + k - 1);
+            res[i] = nums[deque.peekFirst()];
         }
 
         return res;
